@@ -34,7 +34,7 @@ client.on('message', msg => {
           if (cheapest) {
             richEmbed.addField(
               'Cheapest Price',
-              `£${cheapest.priceNew} ([${cheapest.shop.name}](${cheapest.url}))`,
+              `£${cheapest.priceNew.toFixed(2)} ([${cheapest.shop.name}](${cheapest.url}))`,
               true
             );
           }
