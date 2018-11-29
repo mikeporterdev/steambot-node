@@ -1,6 +1,6 @@
 import { SteamApi } from '../api/steam-api';
 import { ItadApi } from '../api/itad-api';
-import { CacheableObservable } from '../models/cacheable-observable';
+import { CacheableObservable } from '../functions/cacheable-observable';
 import * as Fuse from 'fuse.js';
 import { SimpleSteamApp, SteamGame } from '../models/steam-api.models';
 import { Observable } from 'rxjs';
