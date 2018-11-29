@@ -1,7 +1,6 @@
 import { Bot } from './bot-functions/bot';
 import { Client, RichEmbed } from 'discord.js';
 
-const port = process.env.PORT || 3000;
 const steamKey = process.env.STEAM_API_KEY || '';
 const itadKey = process.env.ITAD_API_KEY || '';
 const discordKey = process.env.DISCORD_API_KEY;
@@ -27,7 +26,7 @@ client.on('message', msg => {
       richEmbed.setDescription(res.shortDescription);
       richEmbed.setAuthor('SteamBot');
       const cheapest = res.cheapestPrice();
-      richEmbed.addField('Price', `£${cheapest.priceNew} ([${cheapest.shop.name}](${cheapest.url}))`);
+      richEmbed.addField('Cheapest Price', `£${cheapest.priceNew} ([${cheapest.shop.name}](${cheapest.url}))`);
       richEmbed.addField('Metacritic', `${res.metacritic.score}%`);
 
       msg.reply(richEmbed);
