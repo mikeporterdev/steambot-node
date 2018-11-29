@@ -8,9 +8,11 @@ export class CacheableObservable<T> {
   private cache?: Observable<T>;
   private timeRequested?: Date;
 
-  constructor(observable: Observable<T>, lifetimeOfCache: number = 1000 * 60 * 60) {
+  constructor(observable: Observable<T>, lifetimeOfCache: number = 1000 * 60 * 60, preloadCache = true) {
     this.observable = observable;
     this.lifetimeOfCache = lifetimeOfCache;
+
+    if (preloadCache) this.runObs().subscribe();
   }
 
   public runObs(): Observable<T> {
