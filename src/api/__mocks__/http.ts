@@ -4,7 +4,7 @@ import { of } from 'rxjs';
 export class Http {
   // noinspection JSUnusedGlobalSymbols
   public get(url: string) {
-    return of({body: this.determineMock(url)})
+    return of({ body: this.determineMock(url) });
   }
 
   public determineMock(url: string) {
@@ -21,7 +21,7 @@ export class Http {
 
   private mockAppListCall() {
     // This one we're not going to mock a real response example because the request is huuuge.
-    return { applist: { apps: [{ appid: 275850, name: "No Man's Sky" }] }};
+    return { applist: { apps: [{ appid: 275850, name: "No Man's Sky" }] } };
   }
 
   private mockStoreCall() {

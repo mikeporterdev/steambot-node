@@ -34,7 +34,7 @@ export class SteamGame {
     headerImageUrl: string,
     shortDescription: string,
     releaseDate: string,
-    metacritic?: Metacritic,
+    metacritic?: Metacritic
   ) {
     this.type = type;
     this.name = name;

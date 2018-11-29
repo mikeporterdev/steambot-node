@@ -14,6 +14,10 @@ client.on('ready', () => {
 
 client.on('message', msg => {
   const command = 'steambot search ';
+  if (msg.author.bot) {
+    // Don't respond to other bots
+    return;
+  }
   const content = msg.content.trim();
   if (content.startsWith(command)) {
     const searchString = content.substring(command.length);
@@ -28,13 +32,15 @@ client.on('message', msg => {
       err => {
         console.log(err);
         msg.reply(`Whoops, error occurred searching ${searchString}`);
-      },
+      }
     );
   } else if (content.startsWith('steambot help')) {
-    msg.reply('```' +
-      'steambot search <name> - Searches steam for a game and finds the lowest price available on IsThereAnyDeal.com\n' +
-      'See my source code at: https://github.com/mikeporterdev/steambot-node' +
-      '```')
+    msg.reply(
+      '```' +
+        'steambot search <name> - Searches steam for a game and finds the lowest price available on IsThereAnyDeal.com\n' +
+        'See my source code at: https://github.com/mikeporterdev/steambot-node' +
+        '```'
+    );
   } else if (content.startsWith('steambot')) {
     msg.reply('I don\'t recognize that, try "steambot help" for a list of commands');
   }

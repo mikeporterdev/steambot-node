@@ -59,7 +59,6 @@ describe('Sortable', () => {
       expect(sorted[2].fieldA).toBe('aValue');
       expect(sorted[3].fieldA).toBe('cValue');
     });
-
   });
 });
 

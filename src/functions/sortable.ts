@@ -1,4 +1,4 @@
-export class Sortable<T>{
+export class Sortable<T> {
   private array: T[];
 
   constructor(array: T[]) {
@@ -22,6 +22,6 @@ export class Sortable<T>{
         case 'desc':
           return i * -1;
       }
-    })
+    });
   }
 }

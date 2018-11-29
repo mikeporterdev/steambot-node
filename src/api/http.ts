@@ -10,6 +10,6 @@ export class Http {
 
   public get(url: string): Observable<any> {
     console.log(`Requesting ${url}`);
-    return RxHR.get(url, { json: true})
+    return RxHR.get(url, { json: true });
   }
 }

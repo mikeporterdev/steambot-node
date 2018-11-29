@@ -13,15 +13,12 @@ export class ItadApi {
   }
 
   public getPricingInfoForAppId(appId: number): Observable<Price[]> {
-    return this.getPlain(appId).pipe(
-      mergeMap(res => this.getPricingInfoForPlain(res))
-    )
+    return this.getPlain(appId).pipe(mergeMap(res => this.getPricingInfoForPlain(res)));
   }
 
   private getPlain(appId: number): Observable<Plain> {
     const uri = `https://api.isthereanydeal.com/v02/game/plain/?key=${this.apiKey}&shop=steam&game_id=app%2F${appId}`;
-    return this._http.get(uri)
-      .pipe(map(i => new Plain(i.body.data.plain)));
+    return this._http.get(uri).pipe(map(i => new Plain(i.body.data.plain)));
   }
 
   private getPricingInfoForPlain(plain: Plain): Observable<Price[]> {
@@ -32,8 +29,9 @@ export class ItadApi {
       map(res => res.body.data[plain.plain].list),
       map(prices =>
         prices.map(
-          (i: any) => new Price(i.price_new, i.price_old, i.price_cut, i.url, new Shop(i.shop.id, i.shop.name)),
-        ))
+          (i: any) => new Price(i.price_new, i.price_old, i.price_cut, i.url, new Shop(i.shop.id, i.shop.name))
+        )
+      )
     );
   }
 }

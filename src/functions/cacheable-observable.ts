@@ -18,7 +18,10 @@ export class CacheableObservable<T> {
   }
 
   public runObs(): Observable<T> {
-    if (!this.cache || (this.timeRequested) && (new Date().getTime() - this.timeRequested.getTime()) > this.lifetimeOfCache) {
+    if (
+      !this.cache ||
+      (this.timeRequested && new Date().getTime() - this.timeRequested.getTime() > this.lifetimeOfCache)
+    ) {
       this.timeRequested = new Date();
       this.cache = this.observable.pipe(shareReplay());
     }
@@ -29,5 +32,4 @@ export class CacheableObservable<T> {
   public bustCache(): void {
     this.cache = undefined;
   }
-
 }
