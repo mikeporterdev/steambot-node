@@ -3,14 +3,17 @@ import { ItadApi } from '../api/itad-api';
 import { CacheableObservable } from '../functions/cacheable-observable';
 import * as Fuse from 'fuse.js';
 import { SimpleSteamApp, SteamGame } from '../models/steam-api.models';
-import { Observable } from 'rxjs';
-import { map, mergeMap } from 'rxjs/operators';
+import { Observable, throwError } from 'rxjs';
+import { catchError, map, mergeMap } from 'rxjs/operators';
 import { Sortable } from '../functions/sortable';
 
 export class Bot {
   private steamApi: SteamApi;
   private itadApi: ItadApi;
   private appListCache: CacheableObservable<SimpleSteamApp[]>;
+
+  private filteredIds: number[] = [];
+
   constructor(steamKey: string, itadKey: string) {
     this.steamApi = new SteamApi(steamKey);
     this.itadApi = new ItadApi(itadKey);
@@ -38,9 +41,25 @@ export class Bot {
         // @ts-ignore
         const sortedByClosest = fuse.search(name) as Array<FuseResult<SimpleSteamApp>>;
         const closestMatching = sortedByClosest.filter(app => app.score === sortedByClosest[0].score);
-        const closestMatchingLowestId = new Sortable(closestMatching.map(i => i.item)).sortByField('appId');
 
-        return this.getFullDetails(closestMatchingLowestId[0]);
+        const closestMatchingWithoutPreviouslyFailedIds = closestMatching.filter(
+          i => !this.filteredIds.some(j => j === i.item.appId)
+        );
+
+        if (closestMatchingWithoutPreviouslyFailedIds.length === 0) {
+          return throwError(new Error('Cannot find any results for this game'));
+        }
+
+        const closestMatchingLowestId = new Sortable(
+          closestMatchingWithoutPreviouslyFailedIds.map(i => i.item)
+        ).sortByField('appId');
+
+        return this.getFullDetails(closestMatchingLowestId[0]).pipe(
+          catchError(() => {
+            this.filteredIds.push(closestMatchingLowestId[0].appId);
+            return this.getGame(name);
+          })
+        );
       })
     );
   }
