@@ -1,19 +1,16 @@
 import { Observable } from 'rxjs';
-
-import { RxHR } from '@akanass/rx-http-request';
 import { Metacritic, PriceOverview, SimpleSteamApp, SteamGame } from '../models/steam-api.models';
 import { map } from 'rxjs/operators';
+import { Http } from './http';
 
 export class SteamApi {
   private readonly apiKey?: string;
+  private readonly _http: Http;
 
   constructor(keyz?: string) {
     this.apiKey = keyz;
+    this._http = new Http();
   }
-
-  private readonly options = {
-    json: true,
-  };
 
   public getAppList(): Observable<SimpleSteamApp[]> {
     return this.unauthApiRequest('ISteamApps', 'GetAppList').pipe(
@@ -26,8 +23,7 @@ export class SteamApi {
 
   private unauthApiRequest(interfce: string, method: string, version: number = 2): Observable<any> {
     const uri = `https://api.steampowered.com/${interfce}/${method}/v${version}`;
-    console.info('Requesting: ' + uri);
-    return RxHR.get(uri, this.options);
+    return this._http.get(uri);
   }
 
   public getFullSteamDetails(game: SimpleSteamApp): Observable<SteamGame> {
@@ -35,8 +31,7 @@ export class SteamApi {
       throw new Error('No API Key set');
     }
     const uri = `https://store.steampowered.com/api/appdetails?key=${this.apiKey}&appids=${game.appId}`;
-    console.log(`requesting ${uri}`);
-    return RxHR.get(uri, this.options).pipe(
+    return this._http.get(uri).pipe(
       map((app: any) => app.body[game.appId].data),
       map((app: any) => {
         const priceOverview = app.price_overview;

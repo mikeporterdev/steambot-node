@@ -1,18 +1,16 @@
-import { RxHR } from '@akanass/rx-http-request';
 import { map, mergeMap } from 'rxjs/operators';
 import { Plain, Price, Shop } from '../models/itad-api.models';
 import { Observable } from 'rxjs';
+import { Http } from './http';
 
 export class ItadApi {
   private readonly apiKey?: string;
+  private readonly _http: Http;
 
   constructor(apiKey?: string) {
     this.apiKey = apiKey;
+    this._http = new Http();
   }
-
-  private readonly options = {
-    json: true,
-  };
 
   public getPricingInfoForAppId(appId: number): Observable<Price[]> {
     return this.getPlain(appId).pipe(
@@ -22,17 +20,15 @@ export class ItadApi {
 
   private getPlain(appId: number): Observable<Plain> {
     const uri = `https://api.isthereanydeal.com/v02/game/plain/?key=${this.apiKey}&shop=steam&game_id=app%2F${appId}`;
-    console.log(`Requesting ${uri}`);
-    return RxHR.get(uri, this.options)
+    return this._http.get(uri)
       .pipe(map(i => new Plain(i.body.data.plain)));
   }
 
   private getPricingInfoForPlain(plain: Plain): Observable<Price[]> {
-    const uri2 = `https://api.isthereanydeal.com/v01/game/prices/?key=${this.apiKey}&plains=${
+    const uri = `https://api.isthereanydeal.com/v01/game/prices/?key=${this.apiKey}&plains=${
       plain.plain
     }&region=uk&country=GB`;
-    console.log(`Requesting ${uri2}`);
-    return RxHR.get(uri2, this.options).pipe(
+    return this._http.get(uri).pipe(
       map(res => res.body.data[plain.plain].list),
       map(prices =>
         prices.map(
