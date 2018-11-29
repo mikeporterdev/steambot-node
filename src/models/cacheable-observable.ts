@@ -12,7 +12,9 @@ export class CacheableObservable<T> {
     this.observable = observable;
     this.lifetimeOfCache = lifetimeOfCache;
 
-    if (preloadCache) this.runObs().subscribe();
+    if (preloadCache) {
+      this.runObs().subscribe();
+    }
   }
 
   public runObs(): Observable<T> {
@@ -22,6 +24,10 @@ export class CacheableObservable<T> {
     }
 
     return this.cache;
+  }
+
+  public bustCache(): void {
+    this.cache = undefined;
   }
 
 }

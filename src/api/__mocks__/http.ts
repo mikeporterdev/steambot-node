@@ -1,10 +1,14 @@
 import { of } from 'rxjs';
-import { SimpleSteamApp } from '../../models/steam-api.models';
 
+// noinspection JSUnusedGlobalSymbols
 export class Http {
+  // noinspection JSUnusedGlobalSymbols
   public get(url: string) {
-    console.log('Mocking call to ${url}');
-    if(url === 'https://api.isthereanydeal.com/v02/game/plain/?key=NO KEY&shop=steam&game_id=app%2F275850') {
+    return of({body: this.determineMock(url)})
+  }
+
+  public determineMock(url: string) {
+    if (url === 'https://api.isthereanydeal.com/v02/game/plain/?key=NO KEY&shop=steam&game_id=app%2F275850') {
       return this.mockItadPlainCall();
     } else if (url === 'https://api.steampowered.com/ISteamApps/GetAppList/v2') {
       return this.mockAppListCall();
@@ -17,12 +21,11 @@ export class Http {
 
   private mockAppListCall() {
     // This one we're not going to mock a real response example because the request is huuuge.
-    const simpleSteamApp = new SimpleSteamApp(275850, 'No Man\'s Sky');
-    return of({'appList': {'apps': [JSON.stringify(simpleSteamApp)]}})
+    return { applist: { apps: [{ appid: 275850, name: "No Man's Sky" }] }};
   }
 
   private mockStoreCall() {
-    return of({
+    return {
       '275850': {
         success: true,
         data: {
@@ -32,7 +35,7 @@ export class Http {
           required_age: 0,
           is_free: false,
           controller_support: 'full',
-           short_description:
+          short_description:
             "No Man's Sky is a game about exploration and survival in an infinite procedurally generated universe.",
           header_image: 'https://steamcdn-a.akamaihd.net/steam/apps/275850/header.jpg?t=1542978561',
           website: 'http://www.no-mans-sky.com',
@@ -52,15 +55,15 @@ export class Http {
           content_descriptors: { ids: [], notes: null },
         },
       },
-    });
+    };
   }
 
   private mockItadPlainCall() {
-    return of({ '.meta': { match: 'id', active: true }, data: { plain: 'nomanssky' } });
+    return { '.meta': { match: 'id', active: true }, data: { plain: 'nomanssky' } };
   }
 
   private mockItadPricesCall() {
-    return of({
+    return {
       '.meta': { currency: 'GBP' },
       data: {
         nomanssky: {
@@ -85,6 +88,6 @@ export class Http {
           urls: { game: 'https://isthereanydeal.com/#/page:game/info?plain=nomanssky' },
         },
       },
-    });
+    };
   }
 }
