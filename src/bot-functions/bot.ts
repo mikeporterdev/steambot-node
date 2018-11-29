@@ -6,6 +6,7 @@ import { SimpleSteamApp, SteamGame } from '../models/steam-api.models';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map, mergeMap } from 'rxjs/operators';
 import { Sortable } from '../functions/sortable';
+import { RichEmbed } from 'discord.js';
 
 export class Bot {
   private steamApi: SteamApi;
@@ -75,6 +76,33 @@ export class Bot {
         );
       })
     );
+  }
+
+  public buildRichEmbed(steamGame: SteamGame): RichEmbed {
+    const richEmbed = new RichEmbed();
+    richEmbed.setTitle(`${steamGame.name}`);
+    richEmbed.setURL(`https://store.steampowered.com/app/${steamGame.steamAppId}`);
+    richEmbed.setThumbnail(steamGame.headerImageUrl);
+    richEmbed.setDescription(steamGame.shortDescription);
+    richEmbed.setAuthor('SteamBot');
+    if (steamGame.isFree) {
+      richEmbed.addField('Price', `[Free!](https://store.steampowered.com/app/${steamGame.steamAppId})`, true);
+    } else {
+      const cheapest = steamGame.cheapestPrice();
+      if (cheapest) {
+        richEmbed.addField(
+          'Cheapest Price',
+          `£${cheapest.priceNew.toFixed(2)} ([${cheapest.shop.name}](${cheapest.url}))`,
+          true
+        );
+      }
+    }
+    if (steamGame.metacritic) {
+      richEmbed.addField('Metacritic', `${steamGame.metacritic.score}%`, true);
+    }
+    richEmbed.addField(`Release Date`, steamGame.releaseDate, true);
+
+    return richEmbed;
   }
 }
 

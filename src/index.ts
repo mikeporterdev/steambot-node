@@ -1,5 +1,5 @@
 import { Bot } from './bot-functions/bot';
-import { Client, RichEmbed } from 'discord.js';
+import { Client } from 'discord.js';
 
 const steamKey = process.env.STEAM_API_KEY || '';
 const itadKey = process.env.ITAD_API_KEY || '';
@@ -21,31 +21,7 @@ client.on('message', msg => {
 
     bot.getGame(searchString).subscribe(
       res => {
-        const richEmbed = new RichEmbed();
-        richEmbed.setTitle(`${res.name}`);
-        richEmbed.setURL(`https://store.steampowered.com/app/${res.steamAppId}`);
-        richEmbed.setThumbnail(res.headerImageUrl);
-        richEmbed.setDescription(res.shortDescription);
-        richEmbed.setAuthor('SteamBot');
-        if (res.isFree) {
-          richEmbed.addField('Price', `[Free!](https://store.steampowered.com/app/${res.steamAppId})`, true);
-        } else {
-          const cheapest = res.cheapestPrice();
-          if (cheapest) {
-            richEmbed.addField(
-              'Cheapest Price',
-              `£${cheapest.priceNew.toFixed(2)} ([${cheapest.shop.name}](${cheapest.url}))`,
-              true
-            );
-          }
-        }
-        if (res.metacritic) {
-          richEmbed.addField('Metacritic', `${res.metacritic.score}%`, true);
-        }
-        richEmbed.addField(`Release Date`, res.releaseDate, true);
-
-        // releaseDate
-
+        const richEmbed = bot.buildRichEmbed(res);
         msg.reply(richEmbed);
       },
       err => {
