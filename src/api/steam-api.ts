@@ -1,5 +1,5 @@
-import { Observable } from 'rxjs';
-import { Metacritic, PriceOverview, SimpleSteamApp, SteamGame } from '../models/steam-api.models';
+import { Observable, throwError } from 'rxjs';
+import { Metacritic, SimpleSteamApp, SteamGame } from '../models/steam-api.models';
 import { map } from 'rxjs/operators';
 import { Http } from './http';
 
@@ -32,9 +32,16 @@ export class SteamApi {
     }
     const uri = `https://store.steampowered.com/api/appdetails?key=${this.apiKey}&appids=${game.appId}`;
     return this._http.get(uri).pipe(
-      map((app: any) => app.body[game.appId].data),
       map((app: any) => {
-        const priceOverview = app.price_overview;
+        const bodyElement = app.body[game.appId];
+        if (bodyElement.success) {
+          return bodyElement.data;
+        } else {
+          throw throwError(new Error('Could not find on STore'));
+        }
+      }),
+      map((app: any) => {
+        const metacritic = app.metacritic ? new Metacritic(app.metacritic.score) : undefined;
         return new SteamGame(
           app.type,
           app.name,
@@ -42,13 +49,8 @@ export class SteamApi {
           app.is_free,
           app.header_image,
           app.short_description,
-          new PriceOverview(
-            priceOverview.initial,
-            priceOverview.currency,
-            priceOverview.finalz,
-            priceOverview.discount_percent
-          ),
-          new Metacritic(app.metacritic.score)
+          app.release_date.date,
+          metacritic
         );
       })
     );

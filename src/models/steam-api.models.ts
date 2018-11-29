@@ -22,8 +22,8 @@ export class SteamGame {
   public isFree: boolean;
   public headerImageUrl: string;
   public shortDescription: string;
-  public priceOverview: PriceOverview;
-  public metacritic: Metacritic;
+  public releaseDate: string;
+  public metacritic?: Metacritic;
   public prices?: Price[];
 
   constructor(
@@ -33,8 +33,8 @@ export class SteamGame {
     isFree: boolean,
     headerImageUrl: string,
     shortDescription: string,
-    priceOverview: PriceOverview,
-    metacritic: Metacritic
+    releaseDate: string,
+    metacritic?: Metacritic,
   ) {
     this.type = type;
     this.name = name;
@@ -42,10 +42,9 @@ export class SteamGame {
     this.isFree = isFree;
     this.headerImageUrl = headerImageUrl;
     this.shortDescription = shortDescription;
-    this.priceOverview = priceOverview;
+    this.releaseDate = releaseDate;
     this.metacritic = metacritic;
   }
-
 
   public cheapestPrice(): Price {
     if (!this.prices) {

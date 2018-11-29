@@ -5,7 +5,8 @@
   "scripts": {
     "compile": "tsc",
     "start": "tsc-watch --onSuccess \"nodemon dist\"",
-    "lint": "eslint src --ext ts"
+    "lint": "eslint src --ext ts",
+    "test": "jest"
   },
   "dependencies": {
     "@akanass/rx-http-request": "^3.1.0",

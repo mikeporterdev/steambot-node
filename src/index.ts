@@ -19,21 +19,40 @@ client.on('message', msg => {
 
     msg.reply(`Searching ${searchString}`);
 
-    bot.getGame(searchString).subscribe(res => {
-      const richEmbed = new RichEmbed();
-      richEmbed.setTitle(res.name);
-      richEmbed.setThumbnail(res.headerImageUrl);
-      richEmbed.setDescription(res.shortDescription);
-      richEmbed.setAuthor('SteamBot');
-      const cheapest = res.cheapestPrice();
-      richEmbed.addField('Cheapest Price', `£${cheapest.priceNew} ([${cheapest.shop.name}](${cheapest.url}))`);
-      richEmbed.addField('Metacritic', `${res.metacritic.score}%`);
+    bot.getGame(searchString).subscribe(
+      res => {
+        const richEmbed = new RichEmbed();
+        richEmbed.setTitle(`${res.name}`);
+        richEmbed.setURL(`https://store.steampowered.com/app/${res.steamAppId}`);
+        richEmbed.setThumbnail(res.headerImageUrl);
+        richEmbed.setDescription(res.shortDescription);
+        richEmbed.setAuthor('SteamBot');
+        if (res.isFree) {
+          richEmbed.addField('Price', `[Free!](https://store.steampowered.com/app/${res.steamAppId})`, true);
+        } else {
+          const cheapest = res.cheapestPrice();
+          if (cheapest) {
+            richEmbed.addField(
+              'Cheapest Price',
+              `£${cheapest.priceNew} ([${cheapest.shop.name}](${cheapest.url}))`,
+              true
+            );
+          }
+        }
+        if (res.metacritic) {
+          richEmbed.addField('Metacritic', `${res.metacritic.score}%`, true);
+        }
+        richEmbed.addField(`Release Date`, res.releaseDate, true);
 
-      msg.reply(richEmbed);
-    }, err => {
-      console.log(err);
-      msg.reply(`Whoops, error occurred searching ${searchString}`);
-    })
+        // releaseDate
+
+        msg.reply(richEmbed);
+      },
+      err => {
+        console.log(err);
+        msg.reply(`Whoops, error occurred searching ${searchString}`);
+      }
+    );
   }
 });
 
