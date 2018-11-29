@@ -5,8 +5,8 @@ export class SimpleSteamApp {
   public appId: number;
   public name: string;
 
-  constructor(appid: number, name: string) {
-    this.appId = appid;
+  constructor(appId: number, name: string) {
+    this.appId = appId;
     this.name = name;
   }
 

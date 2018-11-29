@@ -5,7 +5,7 @@ import { Metacritic, PriceOverview, SimpleSteamApp, SteamGame } from '../models/
 import { map } from 'rxjs/operators';
 
 export class SteamApi {
-  private apiKey?: string;
+  private readonly apiKey?: string;
 
   constructor(keyz?: string) {
     this.apiKey = keyz;

@@ -15,7 +15,13 @@ export class Sortable<T>{
       } else {
         i = 0;
       }
-      return i;
+
+      switch (sort) {
+        case 'asc':
+          return i;
+        case 'desc':
+          return i * -1;
+      }
     })
   }
 }

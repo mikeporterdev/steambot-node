@@ -1,11 +1,3 @@
-export class PlainRequest {
-  public data: Plain;
-
-  constructor(data: Plain) {
-    this.data = data;
-  }
-}
-
 export class Plain {
   public plain: string;
 
