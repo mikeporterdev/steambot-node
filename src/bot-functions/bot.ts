@@ -41,7 +41,7 @@ export class Bot {
 
         // cast fuse results because their typings don't include the obj structure change when includeScore is set to true
         // @ts-ignore
-        const sortedByClosest = fuse.search(name) as Array<FuseResult<SimpleSteamApp>>;
+        const sortedByClosest = fuse.search(name) as Array<{ item: any; score: number }>;
         const closestMatching = sortedByClosest.filter(app => app.score === sortedByClosest[0].score);
 
         const closestMatchingWithoutPreviouslyFailedIds = closestMatching.filter(
@@ -104,15 +104,5 @@ export class Bot {
     richEmbed.addField(`Release Date`, steamGame.releaseDate, true);
 
     return richEmbed;
-  }
-}
-
-class FuseResult<T> {
-  public item: T;
-  public score: number;
-
-  constructor(item: T, score: number) {
-    this.item = item;
-    this.score = score;
   }
 }
