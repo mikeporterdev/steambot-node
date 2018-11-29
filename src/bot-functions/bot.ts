@@ -39,6 +39,7 @@ export class Bot {
           includeScore: true,
         });
 
+        // cast fuse results because their typings don't include the obj structure change when includeScore is set to true
         // @ts-ignore
         const sortedByClosest = fuse.search(name) as Array<FuseResult<SimpleSteamApp>>;
         const closestMatching = sortedByClosest.filter(app => app.score === sortedByClosest[0].score);
