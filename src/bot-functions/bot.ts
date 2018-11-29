@@ -3,8 +3,9 @@ import { ItadApi } from '../api/itad-api';
 import { CacheableObservable } from '../functions/cacheable-observable';
 import * as Fuse from 'fuse.js';
 import { SimpleSteamApp, SteamGame } from '../models/steam-api.models';
-import { Observable, race } from 'rxjs';
+import { Observable } from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
+import { Sortable } from '../functions/sortable';
 
 export class Bot {
   private steamApi: SteamApi;
@@ -37,9 +38,9 @@ export class Bot {
         // @ts-ignore
         const sortedByClosest = fuse.search(name) as Array<FuseResult<SimpleSteamApp>>;
         const closestMatching = sortedByClosest.filter(app => app.score === sortedByClosest[0].score);
+        const closestMatchingLowestId = new Sortable(closestMatching.map(i => i.item)).sortByField('appId');
 
-        const observableList: Array<Observable<SteamGame>> = closestMatching.map(i => this.getFullDetails(i.item));
-        return race(observableList);
+        return this.getFullDetails(closestMatchingLowestId[0]);
       })
     );
   }
