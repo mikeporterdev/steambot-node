@@ -49,7 +49,6 @@ export class Bot {
         // cast fuse results because their typings don't include the obj structure change when includeScore is set to true
         // @ts-ignore
         const sortedByClosest = fuse.search(name.trim()) as Array<{ item: SimpleSteamApp; score: number }>;
-        console.log(sortedByClosest);
 
         const closestMatching = sortedByClosest.filter(
           app => app.score === sortedByClosest[0].score && app.score < 0.4
@@ -58,6 +57,8 @@ export class Bot {
         const closestMatchingWithoutPreviouslyFailedIds = closestMatching.filter(
           i => !this.filteredIds.some(j => j === i.item.appId)
         );
+
+        console.log(closestMatchingWithoutPreviouslyFailedIds)
 
         if (closestMatchingWithoutPreviouslyFailedIds.length === 0) {
           return throwError(new Error('Cannot find any results for this game'));

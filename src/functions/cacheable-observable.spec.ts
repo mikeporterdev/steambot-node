@@ -19,7 +19,7 @@ describe('CacheableObservable', () => {
     expect(spy).not.toHaveBeenCalled();
   });
 
-  it('should not call multiple times if cache allive', () => {
+  it('should not call multiple times if cache alive', () => {
     const observable = of([1, 2]);
     const spy = spyOn(observable, 'subscribe');
     const cacheableObservable = new CacheableObservable(observable);
