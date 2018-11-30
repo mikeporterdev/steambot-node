@@ -1,0 +1,18 @@
+version: '3.4'
+
+services:
+  steambot:
+    build:
+      context: .
+    environment:
+      - STEAM_API_KEY=/run/secrets/steam_key
+      - ITAD_API_KEY=/run/secrets/itad_key
+      - DISCORD_API_KEY=/run/secrets/discord_key
+
+secrets:
+  itad_key:
+    file: ./itad_key
+  discord_key:
+    file: ./discord_key
+  steam_key:
+    file: ./steam_key

@@ -5,5 +5,7 @@ WORKDIR /usr/src/bot
 
 COPY . /usr/src/bot
 
+RUN npm install --quiet
+RUN npm run compile
 CMD ["node", "index.js"]
 
