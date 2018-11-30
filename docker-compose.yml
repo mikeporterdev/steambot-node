@@ -8,6 +8,10 @@ services:
       - STEAM_API_KEY=/run/secrets/steam_key
       - ITAD_API_KEY=/run/secrets/itad_key
       - DISCORD_API_KEY=/run/secrets/discord_key
+    secrets:
+      - itad_key
+      - discord_key
+      - steam_key
 
 secrets:
   itad_key:
