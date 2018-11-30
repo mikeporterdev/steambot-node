@@ -5,6 +5,10 @@ const steamKey = process.env.STEAM_API_KEY || '';
 const itadKey = process.env.ITAD_API_KEY || '';
 const discordKey = process.env.DISCORD_API_KEY;
 
+console.log(steamKey)
+console.log(itadKey)
+console.log(discordKey)
+
 const bot = new Bot(steamKey, itadKey);
 const client = new Client();
 
