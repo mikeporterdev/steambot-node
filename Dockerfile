@@ -7,5 +7,5 @@ COPY . /usr/src/bot
 
 RUN npm install --quiet
 RUN npm run compile
-CMD ["node", "index.js"]
+CMD ["node", "dist/index.js"]
 
