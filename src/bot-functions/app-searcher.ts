@@ -14,15 +14,12 @@ export class AppSearcher {
     // cast fuse results because their typings don't include the obj structure change when includeScore is set to true
     // @ts-ignore
     const sortedByClosest = fuse.search(name) as Array<{ item: SimpleSteamApp; score: number }>;
-    console.log(sortedByClosest)
     const sortByField = new Sortable(sortedByClosest).sortByField('score');
     const closestMatching = sortByField.filter(app => app.score < 0.4);
 
     const closestMatchingWithoutPreviouslyFailedIds = closestMatching.filter(
       i => !filteredIds.some(j => j === i.item.appId)
     );
-
-    console.log(closestMatchingWithoutPreviouslyFailedIds.length)
 
     if (closestMatchingWithoutPreviouslyFailedIds.length === 0) {
       throw new Error('Cannot find any results for this game');

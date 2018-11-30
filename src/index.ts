@@ -6,12 +6,6 @@ const steamKey = readFileSync(process.env.STEAM_API_KEY || '', 'utf8').trim();
 const itadKey = readFileSync(process.env.ITAD_API_KEY || '', 'utf8').trim();
 const discordKey = readFileSync(process.env.DISCORD_API_KEY || '', 'utf8').trim();
 
-
-
-console.log(steamKey)
-console.log(itadKey)
-console.log(discordKey)
-
 const bot = new Bot(steamKey, itadKey);
 const client = new Client();
 
