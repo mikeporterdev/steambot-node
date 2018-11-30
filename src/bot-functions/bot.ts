@@ -33,7 +33,11 @@ export class Bot {
                 i.name.toLowerCase().includes(word.toLowerCase()) && !name.toLowerCase().includes(word.toLowerCase())
               );
             })
-        );
+        ).map(i => {
+          i.name = i.name.replace(/[^0-9a-z]/gi, '');
+          return i;
+        })
+        ;
 
         const fuse = new Fuse(apps, {
           shouldSort: true,
@@ -46,6 +50,10 @@ export class Bot {
           includeScore: true,
         });
 
+
+        name = name.replace(/[^0-9a-z]/gi, '');
+
+        console.log(name.replace(/[^0-9a-z]/gi, ''))
         // cast fuse results because their typings don't include the obj structure change when includeScore is set to true
         // @ts-ignore
         const sortedByClosest = fuse.search(name.trim()) as Array<{ item: SimpleSteamApp; score: number }>;
@@ -58,7 +66,7 @@ export class Bot {
           i => !this.filteredIds.some(j => j === i.item.appId)
         );
 
-        console.log(closestMatchingWithoutPreviouslyFailedIds)
+        console.log(closestMatchingWithoutPreviouslyFailedIds);
 
         if (closestMatchingWithoutPreviouslyFailedIds.length === 0) {
           return throwError(new Error('Cannot find any results for this game'));
