@@ -66,25 +66,8 @@ export class Bot {
       richEmbed.addField('Price', `[Free!](https://store.steampowered.com/app/${steamGame.steamAppId})`, true);
     } else {
       if (steamGame.prices) {
-        const cheapest = steamGame.cheapestPrice();
-        if (cheapest) {
-          let message: string;
-          if (cheapest.shop.id !== 'steam') {
-            const steam = steamGame.prices.find(i => i.shop.id === 'steam');
-            if (steam) {
-              const pct = ((steam.priceNew - cheapest.priceNew) / steam.priceNew) * 100;
-
-              message =
-                `£${cheapest.priceNew.toFixed(2)} ([${cheapest.shop.name}](${cheapest.url})) - ${pct.toFixed(0)}% Cheaper!\n` +
-                `£${steam.priceNew.toFixed(2)} ([${steam.shop.name}](${steam.url}))`;
-            } else {
-              message = `£${cheapest.priceNew.toFixed(2)} ([${cheapest.shop.name}](${cheapest.url}))`;
-            }
-          } else {
-            message = `£${cheapest.priceNew.toFixed(2)} ([${cheapest.shop.name}](${cheapest.url}))`;
-          }
-          richEmbed.addField('Cheapest Price', message, true);
-        }
+        const message = this.getPriceString(steamGame);
+        richEmbed.addField('Cheapest Price', message, true);
       }
     }
     if (steamGame.metacritic) {
@@ -95,5 +78,26 @@ export class Bot {
     }
 
     return richEmbed;
+  }
+
+  private getPriceString(steamGame: SteamGame): string {
+    let message: string = '';
+    if (steamGame.prices) {
+      const cheapest = steamGame.cheapestPrice();
+      if (cheapest) {
+        if (cheapest.shop.id !== 'steam') {
+          const steam = steamGame.prices.find(i => i.shop.id === 'steam');
+          message = `£${cheapest.priceNew.toFixed(2)} ([${cheapest.shop.name}](${cheapest.url}))`;
+
+          if (steam) {
+            const pct = (((steam.priceNew - cheapest.priceNew) / steam.priceNew) * 100).toFixed(0);
+            message += ` - ${pct}% Cheaper!\n` + `£${steam.priceNew.toFixed(2)} ([${steam.shop.name}](${steam.url}))`;
+          }
+        } else {
+          message = `£${cheapest.priceNew.toFixed(2)} ([${cheapest.shop.name}](${cheapest.url}))`;
+        }
+      }
+    }
+    return message;
   }
 }
