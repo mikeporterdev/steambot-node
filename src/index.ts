@@ -1,9 +1,12 @@
 import { Bot } from './bot-functions/bot';
 import { Client } from 'discord.js';
+import { readFileSync } from 'fs';
 
-const steamKey = process.env.STEAM_API_KEY || '';
-const itadKey = process.env.ITAD_API_KEY || '';
-const discordKey = process.env.DISCORD_API_KEY;
+const steamKey = readFileSync(process.env.STEAM_API_KEY || '', 'utf8');
+const itadKey = readFileSync(process.env.ITAD_API_KEY || '', 'utf8');
+const discordKey = readFileSync(process.env.DISCORD_API_KEY || '', 'utf8');
+
+
 
 console.log(steamKey)
 console.log(itadKey)
