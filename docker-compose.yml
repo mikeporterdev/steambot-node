@@ -4,10 +4,9 @@ services:
   steambot:
     build:
       context: .
+    restart: always
     environment:
-      STEAM_API_KEY: /run/secrets/steam_key
-      ITAD_API_KEY: /run/secrets/itad_key
-      DISCORD_API_KEY: /run/secrets/discord_key
+      API_KEYS: /run/secrets
     secrets:
       - itad_key
       - discord_key
