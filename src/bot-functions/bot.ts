@@ -24,13 +24,20 @@ export class Bot {
   public getGame(name: string): Observable<SteamGame> {
     return this.appListCache.runObs().pipe(
       mergeMap(apps => {
-        const wordsToFilter = ['Trailer', 'DLC', 'Teaser'];
+        const wordsToFilter = ['Trailer', 'DLC', 'Teaser', 'Demo'];
 
-        apps = apps.filter(i => !wordsToFilter.some(word => i.name.toLowerCase().includes(word.toLowerCase())));
+        apps = apps.filter(
+          i =>
+            !wordsToFilter.some(word => {
+              return (
+                i.name.toLowerCase().includes(word.toLowerCase()) && !name.toLowerCase().includes(word.toLowerCase())
+              );
+            })
+        );
 
         const fuse = new Fuse(apps, {
           shouldSort: true,
-          threshold: 0.6,
+          threshold: 0.1,
           location: 0,
           distance: 100,
           maxPatternLength: 32,
@@ -41,8 +48,12 @@ export class Bot {
 
         // cast fuse results because their typings don't include the obj structure change when includeScore is set to true
         // @ts-ignore
-        const sortedByClosest = fuse.search(name) as Array<{ item: any; score: number }>;
-        const closestMatching = sortedByClosest.filter(app => app.score === sortedByClosest[0].score);
+        const sortedByClosest = fuse.search(name.trim()) as Array<{ item: SimpleSteamApp; score: number }>;
+        console.log(sortedByClosest);
+
+        const closestMatching = sortedByClosest.filter(
+          app => app.score === sortedByClosest[0].score && app.score < 0.4
+        );
 
         const closestMatchingWithoutPreviouslyFailedIds = closestMatching.filter(
           i => !this.filteredIds.some(j => j === i.item.appId)
@@ -91,17 +102,21 @@ export class Bot {
     } else {
       const cheapest = steamGame.cheapestPrice();
       if (cheapest) {
-        richEmbed.addField(
-          'Cheapest Price',
-          `£${cheapest.priceNew.toFixed(2)} ([${cheapest.shop.name}](${cheapest.url}))`,
-          true
-        );
+        if (cheapest.shop.id !== 'steam') {
+          richEmbed.addField(
+            'Cheapest Price',
+            `£${cheapest.priceNew.toFixed(2)} ([${cheapest.shop.name}](${cheapest.url}))`,
+            true
+          );
+        }
       }
     }
     if (steamGame.metacritic) {
       richEmbed.addField('Metacritic', `${steamGame.metacritic.score}%`, true);
     }
-    richEmbed.addField(`Release Date`, steamGame.releaseDate, true);
+    if (steamGame.releaseDate) {
+      richEmbed.addField(`Release Date`, steamGame.releaseDate, true);
+    }
 
     return richEmbed;
   }

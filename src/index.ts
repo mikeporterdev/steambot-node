@@ -31,7 +31,11 @@ client.on('message', msg => {
       },
       err => {
         console.log(err);
-        msg.reply(`Whoops, error occurred searching ${searchString}`);
+        if (err === 'Cannot find any results for this game') {
+          msg.reply(`No games found for ${content}`);
+        } else {
+          msg.reply(`Whoops, error occurred searching for ${searchString}`);
+        }
       }
     );
   } else if (content.startsWith('steambot help')) {

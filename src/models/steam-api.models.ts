@@ -22,7 +22,7 @@ export class SteamGame {
   public isFree: boolean;
   public headerImageUrl: string;
   public shortDescription: string;
-  public releaseDate: string;
+  public releaseDate?: string;
   public metacritic?: Metacritic;
   public prices?: Price[];
 
@@ -33,7 +33,7 @@ export class SteamGame {
     isFree: boolean,
     headerImageUrl: string,
     shortDescription: string,
-    releaseDate: string,
+    releaseDate?: string,
     metacritic?: Metacritic
   ) {
     this.type = type;
