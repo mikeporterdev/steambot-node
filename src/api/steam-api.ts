@@ -4,10 +4,10 @@ import { map } from 'rxjs/operators';
 import { Http } from './http';
 
 export class SteamApi {
-  private readonly apiKey?: string;
+  private readonly apiKey: string;
   private readonly _http: Http;
 
-  constructor(keyz?: string) {
+  constructor(keyz: string) {
     this.apiKey = keyz;
     this._http = new Http();
   }
@@ -27,14 +27,11 @@ export class SteamApi {
   }
 
   public getFullSteamDetails(game: SimpleSteamApp): Observable<SteamGame> {
-    if (!this.apiKey) {
-      throw new Error('No API Key set');
-    }
     const uri = `https://store.steampowered.com/api/appdetails?key=${this.apiKey}&appids=${game.appId}`;
     return this._http.get(uri).pipe(
       map((app: any) => {
         const bodyElement = app.body[game.appId];
-        if (bodyElement.success) {
+        if (bodyElement.success && bodyElement.data.type === 'game') {
           return bodyElement.data;
         } else {
           throw throwError(new Error('Could not find on STore'));

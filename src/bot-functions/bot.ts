@@ -1,12 +1,11 @@
 import { SteamApi } from '../api/steam-api';
 import { ItadApi } from '../api/itad-api';
 import { CacheableObservable } from '../functions/cacheable-observable';
-import * as Fuse from 'fuse.js';
 import { SimpleSteamApp, SteamGame } from '../models/steam-api.models';
-import { Observable, throwError } from 'rxjs';
+import { Observable } from 'rxjs';
 import { catchError, map, mergeMap } from 'rxjs/operators';
-import { Sortable } from '../functions/sortable';
 import { RichEmbed } from 'discord.js';
+import { AppSearcher } from './app-searcher';
 
 export class Bot {
   private steamApi: SteamApi;
@@ -14,67 +13,24 @@ export class Bot {
   private appListCache: CacheableObservable<SimpleSteamApp[]>;
 
   private filteredIds: number[] = [];
+  private appSearcher: AppSearcher;
 
   constructor(steamKey: string, itadKey: string) {
     this.steamApi = new SteamApi(steamKey);
     this.itadApi = new ItadApi(itadKey);
     this.appListCache = new CacheableObservable(this.steamApi.getAppList());
+    this.appSearcher = new AppSearcher();
   }
 
   public getGame(name: string): Observable<SteamGame> {
     return this.appListCache.runObs().pipe(
       mergeMap(apps => {
-        const wordsToFilter = ['Trailer', 'DLC', 'Teaser', 'Demo'];
 
-        apps = apps.filter(
-          i =>
-            !wordsToFilter.some(word => {
-              return (
-                i.name.toLowerCase().includes(word.toLowerCase()) && !name.toLowerCase().includes(word.toLowerCase())
-              );
-            })
-        ).map(i => {
-          i.name = i.name.replace(/[^0-9a-z]/gi, '');
-          return i;
-        })
-        ;
+        const closestMatchingLowestId: Observable<never> | SimpleSteamApp[] = this.appSearcher.method(apps, name, this.filteredIds);
 
-        const fuse = new Fuse(apps, {
-          shouldSort: true,
-          threshold: 0.1,
-          location: 0,
-          distance: 100,
-          maxPatternLength: 32,
-          minMatchCharLength: 1,
-          keys: ['name'],
-          includeScore: true,
-        });
-
-
-        name = name.replace(/[^0-9a-z]/gi, '');
-
-        console.log(name.replace(/[^0-9a-z]/gi, ''))
-        // cast fuse results because their typings don't include the obj structure change when includeScore is set to true
-        // @ts-ignore
-        const sortedByClosest = fuse.search(name.trim()) as Array<{ item: SimpleSteamApp; score: number }>;
-
-        const closestMatching = sortedByClosest.filter(
-          app => app.score === sortedByClosest[0].score && app.score < 0.4
-        );
-
-        const closestMatchingWithoutPreviouslyFailedIds = closestMatching.filter(
-          i => !this.filteredIds.some(j => j === i.item.appId)
-        );
-
-        console.log(closestMatchingWithoutPreviouslyFailedIds);
-
-        if (closestMatchingWithoutPreviouslyFailedIds.length === 0) {
-          return throwError(new Error('Cannot find any results for this game'));
+        if (closestMatchingLowestId instanceof Observable) {
+          return closestMatchingLowestId;
         }
-
-        const closestMatchingLowestId = new Sortable(
-          closestMatchingWithoutPreviouslyFailedIds.map(i => i.item)
-        ).sortByField('appId');
 
         return this.getFullDetails(closestMatchingLowestId[0]).pipe(
           catchError(() => {
