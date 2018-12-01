@@ -5,16 +5,14 @@ import { Http } from './http';
 import { HTMLElement, parse } from 'node-html-parser';
 
 export class SteamApi {
-  private readonly apiKey: string;
   private readonly _http: Http;
 
-  constructor(keyz: string) {
-    this.apiKey = keyz;
+  constructor() {
     this._http = new Http();
   }
 
   public getFullSteamDetails(game: SimpleSteamApp): Observable<SteamGame> {
-    const uri = `https://store.steampowered.com/api/appdetails?key=${this.apiKey}&appids=${game.appId}`;
+    const uri = `https://store.steampowered.com/api/appdetails?appids=${game.appId}`;
     return this._http.get(uri).pipe(
       map((app: any) => {
         const bodyElement = app.body[game.appId];

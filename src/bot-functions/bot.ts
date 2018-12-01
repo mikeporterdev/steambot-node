@@ -9,8 +9,8 @@ export class Bot {
   private steamApi: SteamApi;
   private itadApi: ItadApi;
 
-  constructor(steamKey: string, itadKey: string) {
-    this.steamApi = new SteamApi(steamKey);
+  constructor(itadKey: string) {
+    this.steamApi = new SteamApi();
     this.itadApi = new ItadApi(itadKey);
   }
 

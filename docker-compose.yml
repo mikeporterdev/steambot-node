@@ -10,12 +10,9 @@ services:
     secrets:
       - itad_key
       - discord_key
-      - steam_key
 
 secrets:
   itad_key:
     file: ./secrets/itad_key
   discord_key:
     file: ./secrets/discord_key
-  steam_key:
-    file: ./secrets/steam_key
