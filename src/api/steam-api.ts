@@ -41,10 +41,12 @@ export class SteamApi {
   }
 
   public search(name: string): Observable<SimpleSteamApp> {
-    const url = `https://store.steampowered.com/search/suggest?term=${encodeURI(name)}&f=games&cc=GB&l=english&excluded_content_descriptors%5B%5D=3&excluded_content_descriptors%5B%5D=4&v=5488179`;
+    const url = `https://store.steampowered.com/search/suggest?term=${encodeURI(
+      name
+    )}&f=games&cc=GB&l=english&excluded_content_descriptors%5B%5D=3&excluded_content_descriptors%5B%5D=4&v=5488179`;
     return this._http.get(url, false).pipe(
       map((apps: any) => {
-        return this.parseHtmlIntoSteamGames(apps);
+          return this.parseHtmlIntoSteamGames(apps);
       })
     );
   }
@@ -55,7 +57,9 @@ export class SteamApi {
   }
 
   private getSteamGameFromHtml(htmlElement: HTMLElement) {
-    const firstLink = htmlElement.querySelectorAll('a')[0];
+    const nodes = htmlElement.querySelectorAll('a');
+    if (!nodes || !nodes.length) throw new Error('No games found!');
+    const firstLink = nodes[0];
     const appName = firstLink.childNodes[0].text;
     const data = (firstLink as HTMLElement).attributes;
     const appId: any = data['data-ds-appid'];

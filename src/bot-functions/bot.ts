@@ -14,7 +14,7 @@ export class Bot {
     this.itadApi = new ItadApi(itadKey);
   }
 
-  public newGetGame(name: string): Observable<SteamGame> {
+  public getGame(name: string): Observable<SteamGame> {
     return this.steamApi.search(name).pipe(
       mergeMap((simpleSteamApp: SimpleSteamApp) => this.getFullDetails(simpleSteamApp))
     )

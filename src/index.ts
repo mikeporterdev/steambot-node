@@ -26,16 +26,16 @@ client.on('message', msg => {
 
     msg.reply(`Searching ${searchString}`);
 
-    bot.newGetGame(searchString).subscribe(
+    bot.getGame(searchString).subscribe(
       res => {
         const richEmbed = bot.buildRichEmbed(res);
         msg.reply(richEmbed);
       },
-      err => {
-        console.log(err);
-        if (err === 'Cannot find any results for this game') {
+      (err: Error) => {
+        if (err.message === 'No games found!') {
           msg.reply(`No games found for ${content}`);
         } else {
+          console.log(err);
           msg.reply(`Whoops, error occurred searching for ${searchString}`);
         }
       }
