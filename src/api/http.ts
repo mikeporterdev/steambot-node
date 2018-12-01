@@ -8,8 +8,9 @@ export class Http {
     this._RxHR = RxHR;
   }
 
-  public get(url: string): Observable<any> {
+  public get(url: string, isJson: boolean = true): Observable<any> {
     console.log(`Requesting ${url}`);
-    return RxHR.get(url, { json: true });
+    return RxHR.get(url, { json: isJson });
   }
+
 }

@@ -58,21 +58,6 @@ export class SteamGame {
     return steamShopInPriceList ? steamShopInPriceList : cheapestPrices[0];
   }
 }
-
-export class PriceOverview {
-  public initialPrice: number;
-  public currency: string;
-  public finalPrice: number;
-  public discountPercent: number;
-
-  constructor(initialPrice: number, currency: string, finalPrice: number, discountPercent: number) {
-    this.initialPrice = initialPrice;
-    this.currency = currency;
-    this.finalPrice = finalPrice;
-    this.discountPercent = discountPercent;
-  }
-}
-
 export class Metacritic {
   public score: number;
 

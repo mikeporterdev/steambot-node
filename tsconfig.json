@@ -11,7 +11,9 @@
     "src/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "**/*.spec.ts",
+    "**/__mocks__/*"
   ],
   "compileOnSave": true
 }

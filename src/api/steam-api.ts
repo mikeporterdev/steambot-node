@@ -2,6 +2,7 @@ import { Observable, throwError } from 'rxjs';
 import { Metacritic, SimpleSteamApp, SteamGame } from '../models/steam-api.models';
 import { map } from 'rxjs/operators';
 import { Http } from './http';
+import { HTMLElement, parse } from 'node-html-parser';
 
 export class SteamApi {
   private readonly apiKey: string;
@@ -10,20 +11,6 @@ export class SteamApi {
   constructor(keyz: string) {
     this.apiKey = keyz;
     this._http = new Http();
-  }
-
-  public getAppList(): Observable<SimpleSteamApp[]> {
-    return this.unauthApiRequest('ISteamApps', 'GetAppList').pipe(
-      map(res => res.body.applist),
-      map(res => {
-        return res.apps.map((app: any) => new SimpleSteamApp(app.appid, app.name));
-      })
-    );
-  }
-
-  private unauthApiRequest(interfce: string, method: string, version: number = 2): Observable<any> {
-    const uri = `https://api.steampowered.com/${interfce}/${method}/v${version}`;
-    return this._http.get(uri);
   }
 
   public getFullSteamDetails(game: SimpleSteamApp): Observable<SteamGame> {
@@ -51,5 +38,27 @@ export class SteamApi {
         );
       })
     );
+  }
+
+  public search(name: string): Observable<SimpleSteamApp> {
+    const url = `https://store.steampowered.com/search/suggest?term=${encodeURI(name)}&f=games&cc=GB&l=english&excluded_content_descriptors%5B%5D=3&excluded_content_descriptors%5B%5D=4&v=5488179`;
+    return this._http.get(url, false).pipe(
+      map((apps: any) => {
+        return this.parseHtmlIntoSteamGames(apps);
+      })
+    );
+  }
+
+  public parseHtmlIntoSteamGames(apps: any) {
+    const htmlElement: HTMLElement = parse(apps.body);
+    return this.getSteamGameFromHtml(htmlElement);
+  }
+
+  private getSteamGameFromHtml(htmlElement: HTMLElement) {
+    const firstLink = htmlElement.querySelectorAll('a')[0];
+    const appName = firstLink.childNodes[0].text;
+    const data = (firstLink as HTMLElement).attributes;
+    const appId: any = data['data-ds-appid'];
+    return new SimpleSteamApp(appId, appName);
   }
 }

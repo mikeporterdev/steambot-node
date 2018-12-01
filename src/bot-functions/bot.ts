@@ -1,45 +1,23 @@
 import { SteamApi } from '../api/steam-api';
 import { ItadApi } from '../api/itad-api';
-import { CacheableObservable } from '../functions/cacheable-observable';
 import { SimpleSteamApp, SteamGame } from '../models/steam-api.models';
-import { Observable, throwError } from 'rxjs';
-import { catchError, map, mergeMap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { map, mergeMap } from 'rxjs/operators';
 import { RichEmbed } from 'discord.js';
-import { AppSearcher } from './app-searcher';
 
 export class Bot {
   private steamApi: SteamApi;
   private itadApi: ItadApi;
-  private appListCache: CacheableObservable<SimpleSteamApp[]>;
-
-  private filteredIds: number[] = [];
-  private appSearcher: AppSearcher;
 
   constructor(steamKey: string, itadKey: string) {
     this.steamApi = new SteamApi(steamKey);
     this.itadApi = new ItadApi(itadKey);
-    this.appListCache = new CacheableObservable(this.steamApi.getAppList());
-    this.appSearcher = new AppSearcher();
   }
 
-  public getGame(name: string): Observable<SteamGame> {
-    return this.appListCache.runObs().pipe(
-      mergeMap(apps => {
-        let closestMatchingLowestId: SimpleSteamApp[];
-        try {
-          closestMatchingLowestId = this.appSearcher.searchApps(apps, name, this.filteredIds);
-        } catch (e) {
-          return throwError(e);
-        }
-
-        return this.getFullDetails(closestMatchingLowestId[0]).pipe(
-          catchError(e => {
-            this.filteredIds.push(closestMatchingLowestId[0].appId);
-            return this.getGame(name);
-          })
-        );
-      })
-    );
+  public newGetGame(name: string): Observable<SteamGame> {
+    return this.steamApi.search(name).pipe(
+      mergeMap((simpleSteamApp: SimpleSteamApp) => this.getFullDetails(simpleSteamApp))
+    )
   }
 
   public getFullDetails(itemToSearch: SimpleSteamApp) {

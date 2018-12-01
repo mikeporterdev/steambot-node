@@ -26,7 +26,7 @@ client.on('message', msg => {
 
     msg.reply(`Searching ${searchString}`);
 
-    bot.getGame(searchString).subscribe(
+    bot.newGetGame(searchString).subscribe(
       res => {
         const richEmbed = bot.buildRichEmbed(res);
         msg.reply(richEmbed);
