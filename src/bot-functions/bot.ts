@@ -42,14 +42,7 @@ export class Bot {
     richEmbed.setThumbnail(steamGame.headerImageUrl);
     richEmbed.setDescription(steamGame.shortDescription);
     richEmbed.setAuthor('SteamBot');
-    if (steamGame.isFree) {
-      richEmbed.addField('Price', `[Free!](https://store.steampowered.com/app/${steamGame.steamAppId})`, true);
-    } else {
-      if (steamGame.prices) {
-        const message = this.getPriceString(steamGame.prices);
-        richEmbed.addField('Cheapest Price', message, true);
-      }
-    }
+    this.buildMessageField(steamGame, richEmbed);
     if (steamGame.metacritic) {
       richEmbed.addField('Metacritic', `${steamGame.metacritic.score}%`, true);
     }
@@ -60,19 +53,26 @@ export class Bot {
     return richEmbed;
   }
 
+  private buildMessageField(steamGame: SteamGame, richEmbed: RichEmbed) {
+    if (steamGame.isFree) {
+      richEmbed.addField('Price', `[Free!](https://store.steampowered.com/app/${steamGame.steamAppId})`, true);
+    } else {
+      if (steamGame.prices) {
+        const message = this.getPriceString(steamGame.prices);
+        richEmbed.addField('Cheapest Price', message, true);
+      }
+    }
+  }
+
   private getPriceString(prices: Price[]): string {
-    let message: string = '';
     const cheapest = this.cheapestPrice(prices);
+    let message: string = `£${cheapest.priceNew.toFixed(2)} ([${cheapest.shop.name}](${cheapest.url}))`;
     if (cheapest.shop.id !== 'steam') {
       const steam = prices.find(i => i.shop.id === 'steam');
-      message = `£${cheapest.priceNew.toFixed(2)} ([${cheapest.shop.name}](${cheapest.url}))`;
-
       if (steam) {
         const pct = (((steam.priceNew - cheapest.priceNew) / steam.priceNew) * 100).toFixed(0);
         message += ` - ${pct}% Cheaper!\n` + `£${steam.priceNew.toFixed(2)} ([${steam.shop.name}](${steam.url}))`;
       }
-    } else {
-      message = `£${cheapest.priceNew.toFixed(2)} ([${cheapest.shop.name}](${cheapest.url}))`;
     }
     return message;
   }
