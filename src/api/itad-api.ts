@@ -4,12 +4,12 @@ import { Observable } from 'rxjs';
 import { Http } from './http';
 
 export class ItadApi {
-  private readonly apiKey?: string;
+  private readonly apiKey: string;
   private readonly _http: Http;
 
-  constructor(apiKey?: string) {
+  constructor(apiKey: string, http: Http) {
     this.apiKey = apiKey;
-    this._http = new Http();
+    this._http = http;
   }
 
   public getPricingInfoForAppId(appId: number): Observable<Price[]> {

@@ -8,10 +8,6 @@ export class SimpleSteamApp {
     this.appId = appId;
     this.name = name;
   }
-
-  public toString() {
-    return `${this.appId} + lol + ${this.name}`;
-  }
 }
 
 export class SteamGame {

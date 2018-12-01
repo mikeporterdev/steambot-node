@@ -1,4 +1,4 @@
-import { Observable, throwError } from 'rxjs';
+import { Observable } from 'rxjs';
 import { Metacritic, SimpleSteamApp, SteamGame } from '../models/steam-api.models';
 import { map } from 'rxjs/operators';
 import { Http } from './http';
@@ -7,8 +7,8 @@ import { HTMLElement, parse } from 'node-html-parser';
 export class SteamApi {
   private readonly _http: Http;
 
-  constructor() {
-    this._http = new Http();
+  constructor(http: Http) {
+    this._http = http;
   }
 
   public getFullSteamDetails(game: SimpleSteamApp): Observable<SteamGame> {
@@ -16,11 +16,7 @@ export class SteamApi {
     return this._http.get(uri).pipe(
       map((app: any) => {
         const bodyElement = app.body[game.appId];
-        if (bodyElement.success && bodyElement.data.type === 'game') {
-          return bodyElement.data;
-        } else {
-          throw throwError(new Error('Could not find on STore'));
-        }
+        return bodyElement.data;
       }),
       map((app: any) => {
         const metacritic = app.metacritic ? new Metacritic(app.metacritic.score) : undefined;
@@ -44,7 +40,7 @@ export class SteamApi {
     )}&f=games&cc=GB&l=english&excluded_content_descriptors%5B%5D=3&excluded_content_descriptors%5B%5D=4&v=5488179`;
     return this._http.get(url, false).pipe(
       map((apps: any) => {
-          return this.parseHtmlIntoSteamGames(apps);
+        return this.parseHtmlIntoSteamGames(apps);
       })
     );
   }
