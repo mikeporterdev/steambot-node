@@ -1,12 +1,16 @@
 import { Bot } from './bot-functions/bot';
 import { Client } from 'discord.js';
 import { readFileSync } from 'fs';
+import { SteamApi } from './api/steam-api';
+import { ItadApi } from './api/itad-api';
 
 const secretsLocation = process.env.API_KEYS || 'secrets/';
 const itadKey = readFileSync(secretsLocation + '/itad_key', 'utf8').trim();
 const discordKey = readFileSync(secretsLocation + '/discord_key', 'utf8').trim();
 
-const bot = new Bot(itadKey);
+const steamApi = new SteamApi();
+const itadApi = new ItadApi(itadKey);
+const bot = new Bot(steamApi, itadApi);
 const client = new Client();
 
 client.on('ready', () => {

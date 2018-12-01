@@ -29,7 +29,7 @@ export class ItadApi {
       map(res => res.body.data[plain.plain].list),
       map(prices =>
         prices.map(
-          (i: any) => new Price(i.price_new, i.price_old, i.price_cut, i.url, new Shop(i.shop.id, i.shop.name))
+          (i: any) => new Price(i.price_new, i.url, new Shop(i.shop.id, i.shop.name))
         )
       )
     );

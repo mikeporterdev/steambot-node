@@ -1,5 +1,4 @@
 import { Price } from './itad-api.models';
-import { Sortable } from '../functions/sortable';
 
 export class SimpleSteamApp {
   public appId: number;
@@ -44,18 +43,6 @@ export class SteamGame {
     this.shortDescription = shortDescription;
     this.releaseDate = releaseDate;
     this.metacritic = metacritic;
-  }
-
-  public cheapestPrice(): Price {
-    if (!this.prices) {
-      throw new Error('prices is null');
-    }
-    const sortedPrices = new Sortable(this.prices).sortByField('priceNew');
-
-    const cheapestPrices = sortedPrices.filter(i => sortedPrices[0].priceNew === i.priceNew);
-
-    const steamShopInPriceList = cheapestPrices.find(i => i.shop.id === 'steam');
-    return steamShopInPriceList ? steamShopInPriceList : cheapestPrices[0];
   }
 }
 export class Metacritic {

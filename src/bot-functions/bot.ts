@@ -4,20 +4,22 @@ import { SimpleSteamApp, SteamGame } from '../models/steam-api.models';
 import { Observable } from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
 import { RichEmbed } from 'discord.js';
+import { Price } from '../models/itad-api.models';
+import { Sortable } from '../functions/sortable';
 
 export class Bot {
   private steamApi: SteamApi;
   private itadApi: ItadApi;
 
-  constructor(itadKey: string) {
-    this.steamApi = new SteamApi();
-    this.itadApi = new ItadApi(itadKey);
+  constructor(steamApi: SteamApi, itadApi: ItadApi) {
+    this.steamApi = steamApi;
+    this.itadApi = itadApi;
   }
 
   public getGame(name: string): Observable<SteamGame> {
-    return this.steamApi.search(name).pipe(
-      mergeMap((simpleSteamApp: SimpleSteamApp) => this.getFullDetails(simpleSteamApp))
-    )
+    return this.steamApi
+      .search(name)
+      .pipe(mergeMap((simpleSteamApp: SimpleSteamApp) => this.getFullDetails(simpleSteamApp)));
   }
 
   public getFullDetails(itemToSearch: SimpleSteamApp) {
@@ -44,7 +46,7 @@ export class Bot {
       richEmbed.addField('Price', `[Free!](https://store.steampowered.com/app/${steamGame.steamAppId})`, true);
     } else {
       if (steamGame.prices) {
-        const message = this.getPriceString(steamGame);
+        const message = this.getPriceString(steamGame.prices);
         richEmbed.addField('Cheapest Price', message, true);
       }
     }
@@ -58,24 +60,29 @@ export class Bot {
     return richEmbed;
   }
 
-  private getPriceString(steamGame: SteamGame): string {
+  private getPriceString(prices: Price[]): string {
     let message: string = '';
-    if (steamGame.prices) {
-      const cheapest = steamGame.cheapestPrice();
-      if (cheapest) {
-        if (cheapest.shop.id !== 'steam') {
-          const steam = steamGame.prices.find(i => i.shop.id === 'steam');
-          message = `£${cheapest.priceNew.toFixed(2)} ([${cheapest.shop.name}](${cheapest.url}))`;
+    const cheapest = this.cheapestPrice(prices);
+    if (cheapest.shop.id !== 'steam') {
+      const steam = prices.find(i => i.shop.id === 'steam');
+      message = `£${cheapest.priceNew.toFixed(2)} ([${cheapest.shop.name}](${cheapest.url}))`;
 
-          if (steam) {
-            const pct = (((steam.priceNew - cheapest.priceNew) / steam.priceNew) * 100).toFixed(0);
-            message += ` - ${pct}% Cheaper!\n` + `£${steam.priceNew.toFixed(2)} ([${steam.shop.name}](${steam.url}))`;
-          }
-        } else {
-          message = `£${cheapest.priceNew.toFixed(2)} ([${cheapest.shop.name}](${cheapest.url}))`;
-        }
+      if (steam) {
+        const pct = (((steam.priceNew - cheapest.priceNew) / steam.priceNew) * 100).toFixed(0);
+        message += ` - ${pct}% Cheaper!\n` + `£${steam.priceNew.toFixed(2)} ([${steam.shop.name}](${steam.url}))`;
       }
+    } else {
+      message = `£${cheapest.priceNew.toFixed(2)} ([${cheapest.shop.name}](${cheapest.url}))`;
     }
     return message;
+  }
+
+  private cheapestPrice(prices: Price[]): Price {
+    const sortedPrices = new Sortable(prices).sortByField('priceNew');
+
+    const cheapestPrices = sortedPrices.filter(i => sortedPrices[0].priceNew === i.priceNew);
+
+    const steamShopInPriceList = cheapestPrices.find(i => i.shop.id === 'steam');
+    return steamShopInPriceList ? steamShopInPriceList : cheapestPrices[0];
   }
 }
