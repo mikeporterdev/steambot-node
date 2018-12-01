@@ -24,8 +24,6 @@ client.on('message', msg => {
   if (content.startsWith(command)) {
     const searchString = content.substring(command.length);
 
-    msg.reply(`Searching ${searchString}`);
-
     bot.getGame(searchString).subscribe(
       res => {
         const richEmbed = bot.buildRichEmbed(res);
@@ -51,5 +49,6 @@ client.on('message', msg => {
     msg.reply('I don\'t recognize that, try "steambot help" for a list of commands');
   }
 });
+
 
 client.login(discordKey);
