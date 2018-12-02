@@ -2,6 +2,7 @@ version: '3.4'
 
 services:
   steambot:
+    container_name: steambot
     build:
       context: .
     restart: always
