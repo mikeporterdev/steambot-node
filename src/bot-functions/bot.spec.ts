@@ -16,7 +16,7 @@ describe('Bot', () => {
     const simpleSteamApp: SimpleSteamApp = { appId: 12345, name: 'The Witcher 3' };
     steamGame = new SteamGame('game', 'The Witcher 3', 12345, false, 'header-image-url', 'Its a game', 'two days ago');
     when(mockedSteam.search('The Witcher 3')).thenReturn(of(simpleSteamApp));
-    when(mockedSteam.getFullSteamDetails(simpleSteamApp)).thenReturn(of(steamGame))
+    when(mockedSteam.getFullSteamDetails(simpleSteamApp)).thenReturn(of(steamGame));
     when(mockedItad.getPricingInfoForAppId(12345)).thenReturn(of([new Price(40, 'test-url', new Shop('gog', 'GOG'))]));
 
 
@@ -121,6 +121,14 @@ describe('Bot', () => {
         const find = richEmbed.fields!.find(i => i.name === 'Cheapest Price');
 
         expect(find!.value).toBe('£40.00 ([GOG](gog-url))');
+      });
+
+      it('should not show price if none available', () => {
+        steamGame.prices = [];
+        const richEmbed = bot.buildRichEmbed(steamGame);
+        expect(richEmbed.fields!.length).toBe(1);
+        expect(richEmbed.fields!.map(i => i.name)).not.toContain('Price');
+        expect(richEmbed.fields!.map(i => i.name)).not.toContain('Cheapest Price');
       });
     });
   });

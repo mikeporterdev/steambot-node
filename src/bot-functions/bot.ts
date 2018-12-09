@@ -57,7 +57,7 @@ export class Bot {
     if (steamGame.isFree) {
       richEmbed.addField('Price', `[Free!](https://store.steampowered.com/app/${steamGame.steamAppId})`, true);
     } else {
-      if (steamGame.prices) {
+      if (steamGame.prices && steamGame.prices.length > 0) {
         const message = this.getPriceString(steamGame.prices);
         richEmbed.addField('Cheapest Price', message, true);
       }
