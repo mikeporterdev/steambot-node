@@ -52,11 +52,15 @@ export class SteamApi {
 
   private getSteamGameFromHtml(htmlElement: HTMLElement) {
     const nodes = htmlElement.querySelectorAll('a');
-    if (!nodes || !nodes.length) throw new Error('No games found!');
+    if (!nodes || !nodes.length) throw new NoGamesFoundError();
     const firstLink = nodes[0];
     const appName = firstLink.childNodes[0].text;
     const data = (firstLink as HTMLElement).attributes;
     const appId: any = data['data-ds-appid'];
     return new SimpleSteamApp(appId, appName);
   }
+}
+
+export class NoGamesFoundError extends Error {
+
 }
