@@ -1,4 +1,4 @@
-import { SteamApi } from '../api/steam-api';
+import { NoGamesFoundError, SteamApi } from '../api/steam-api';
 import { Http } from '../api/http';
 import { instance, mock, when } from 'ts-mockito';
 import { of } from 'rxjs';
@@ -50,15 +50,15 @@ describe('BotFullTest', () => {
       )
     ).thenReturn(of({body: '<body></body>'}));
 
-    let message: string = "";
+    let message: Error | undefined;
 
     try {
       await bot.getGame('badgamestring').toPromise()
     } catch (e) {
-      message = e.message;
+      message = e;
     }
 
-    expect(message).toBe('No games found!');
+    expect(message instanceof NoGamesFoundError).toBeTruthy();
   });
 
   const html =

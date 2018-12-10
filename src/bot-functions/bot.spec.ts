@@ -1,17 +1,18 @@
 import { Metacritic, SimpleSteamApp, SteamGame } from '../models/steam-api.models';
 import { Price, Shop } from '../models/itad-api.models';
 import { Bot } from './bot';
-import { SteamApi } from '../api/steam-api';
+import { NoGamesFoundError, SteamApi } from '../api/steam-api';
 import { ItadApi } from '../api/itad-api';
-import { instance, mock, when } from 'ts-mockito';
-import { of } from 'rxjs';
+import { instance, mock, spy, when } from 'ts-mockito';
+import { of, throwError } from 'rxjs';
 
 describe('Bot', () => {
   let bot: Bot;
   let steamGame: SteamGame;
+  let mockedSteam: SteamApi;
   beforeEach(() => {
     const mockedItad: ItadApi = mock(ItadApi);
-    const mockedSteam: SteamApi = mock(SteamApi);
+    mockedSteam = mock(SteamApi);
 
     const simpleSteamApp: SimpleSteamApp = { appId: 12345, name: 'The Witcher 3' };
     steamGame = new SteamGame('game', 'The Witcher 3', 12345, false, 'header-image-url', 'Its a game', 'two days ago');
@@ -19,19 +20,24 @@ describe('Bot', () => {
     when(mockedSteam.getFullSteamDetails(simpleSteamApp)).thenReturn(of(steamGame));
     when(mockedItad.getPricingInfoForAppId(12345)).thenReturn(of([new Price(40, 'test-url', new Shop('gog', 'GOG'))]));
 
-
     bot = new Bot(instance(mockedSteam), instance(mockedItad));
   });
 
   describe('API', () => {
-    it('should not fail mocks', async() => {
-      const steamGame1 = await bot.getGame('The Witcher 3').toPromise();
+    it('should not crash on unexpected error and should return correct message with no stack trace', async () => {
+      const spied = spy(steamGame);
+      when(spied.name).thenThrow(new Error('Mock Error'));
 
-      expect(steamGame1.steamAppId).toBe(12345);
-      expect(steamGame1.prices![0].priceNew).toBe(40);
+      const message = await bot.buildResponse('The Witcher 3').toPromise();
+      expect(message).toBe('Whoops, error occurred searching for The Witcher 3');
+    });
+
+    it('should return no games found message for no results', async () => {
+      when(mockedSteam.search('abcdef')).thenReturn(throwError(new NoGamesFoundError()));
+      const message = await bot.buildResponse('abcdef').toPromise();
+      expect(message).toBe('No games found for abcdef');
     });
   });
-
 
   describe('MessageBuilder', () => {
     it('should show free if free', () => {

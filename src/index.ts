@@ -1,7 +1,7 @@
 import { Bot } from './bot-functions/bot';
 import { Client } from 'discord.js';
 import { readFileSync } from 'fs';
-import { NoGamesFoundError, SteamApi } from './api/steam-api';
+import { SteamApi } from './api/steam-api';
 import { ItadApi } from './api/itad-api';
 import { Http } from './api/http';
 
@@ -29,27 +29,7 @@ client.on('message', msg => {
   if (content.startsWith(command)) {
     const searchString = content.substring(command.length);
 
-    bot.getGame(searchString).subscribe(
-      res => {
-        try {
-          const richEmbed = bot.buildRichEmbed(res);
-          msg.reply(richEmbed);
-        } catch (e) {
-          console.log(e);
-          msg.reply(`Whoops, error occurred searching for ${searchString}`);
-        }
-      },
-      (err: Error) => {
-        switch(err.constructor) {
-          case NoGamesFoundError:
-            msg.reply(`No games found for ${content}`);
-            break;
-          default:
-            console.log(err);
-            msg.reply(`Whoops, error occurred searching for ${searchString}`);
-        }
-      }
-    );
+    bot.buildResponse(searchString).subscribe(res => msg.reply(res));
   } else if (content.startsWith('steambot help')) {
     msg.reply(
       '```' +
