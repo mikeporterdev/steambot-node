@@ -47,6 +47,7 @@ describe('Bot', () => {
       const find = richEmbed.fields!.find(i => i.name === 'Price');
 
       expect(find!.value).toBe('[Free!](https://store.steampowered.com/app/12345)');
+      expect(true).toBeFalsy();
     });
 
     it('should show free if free even if prices from ITAD', () => {
