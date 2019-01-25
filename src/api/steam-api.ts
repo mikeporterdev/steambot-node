@@ -1,8 +1,8 @@
-import { Observable } from 'rxjs';
 import { Metacritic, SimpleSteamApp, SteamGame } from '../models/steam-api.models';
-import { map } from 'rxjs/operators';
 import { Http } from './http';
 import { HTMLElement, parse } from 'node-html-parser';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 export class SteamApi {
   private readonly _http: Http;

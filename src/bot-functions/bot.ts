@@ -1,11 +1,11 @@
 import { NoGamesFoundError, SteamApi } from '../api/steam-api';
 import { ItadApi } from '../api/itad-api';
 import { SimpleSteamApp, SteamGame } from '../models/steam-api.models';
-import { Observable, of } from 'rxjs';
-import { catchError, map, mergeMap } from 'rxjs/operators';
-import { RichEmbed } from 'discord.js';
 import { Price } from '../models/itad-api.models';
 import { Sortable } from '../functions/sortable';
+import { RichEmbed } from 'discord.js';
+import { catchError, map, mergeMap } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
 
 export class Bot {
   private steamApi: SteamApi;
@@ -19,7 +19,7 @@ export class Bot {
   public buildResponse(searchString: string): Observable<RichEmbed | string> {
     return this.getGame(searchString)
       .pipe(
-        map(i => this.buildRichEmbed(i)),
+        map((i: SteamGame) => this.buildRichEmbed(i)),
         catchError((err: Error) => {
           switch(err.constructor) {
             case NoGamesFoundError:
@@ -42,7 +42,7 @@ export class Bot {
     return this.steamApi.getFullSteamDetails(itemToSearch).pipe(
       mergeMap((fullApp: SteamGame) => {
         return this.itadApi.getPricingInfoForAppId(fullApp.steamAppId).pipe(
-          map(prices => {
+          map((prices: Price[]) => {
             fullApp.prices = prices;
             return fullApp;
           }),

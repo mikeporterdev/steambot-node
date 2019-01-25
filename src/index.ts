@@ -1,5 +1,5 @@
 import { Bot } from './bot-functions/bot';
-import { Client } from 'discord.js';
+import { Client, Message, RichEmbed } from 'discord.js';
 import { readFileSync } from 'fs';
 import { SteamApi } from './api/steam-api';
 import { ItadApi } from './api/itad-api';
@@ -19,7 +19,7 @@ client.on('ready', () => {
   console.log(`logged in as ${client.user.tag}`);
 });
 
-client.on('message', msg => {
+client.on('message', (msg: Message) => {
   const command = 'steambot search ';
   if (msg.author.bot) {
     // Don't respond to other bots
@@ -29,7 +29,7 @@ client.on('message', msg => {
   if (content.startsWith(command)) {
     const searchString = content.substring(command.length);
 
-    bot.buildResponse(searchString).subscribe(res => msg.reply(res));
+    bot.buildResponse(searchString).subscribe((res: RichEmbed | string) => msg.reply(res));
   } else if (content.startsWith('steambot help')) {
     msg.reply(
       '```' +
