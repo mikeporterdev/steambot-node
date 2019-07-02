@@ -1,0 +1,9 @@
+secrets
+dist/
+*.md
+.idea/
+*.iml
+.git
+*Dockerfile*
+*docker-compose*
+node_modules
