@@ -3,8 +3,7 @@ version: '3.4'
 services:
   steambot:
     container_name: steambot
-    build:
-      context: .
+    image: mikeporterdev/steambot-node
     restart: always
     environment:
       API_KEYS: /run/secrets

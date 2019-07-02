@@ -1,11 +1,14 @@
 FROM node:latest
 
-RUN mkdir -p /usr/src/bot
-WORKDIR /usr/src/bot
+WORKDIR /usr/src/app
 
-COPY . /usr/src/bot
+COPY package*.json ./
 
-RUN npm install --quiet
+RUN npm install
+
+COPY . .
+
 RUN npm run compile
+
 CMD ["node", "dist/index.js"]
 
