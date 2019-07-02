@@ -14,4 +14,4 @@ jobs:
       - store_artifacts:
           path: coverage
       - codecov/upload:
-          file: coverage/json
+          file: coverage/*.json
