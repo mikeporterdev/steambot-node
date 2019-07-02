@@ -15,3 +15,4 @@ jobs:
           path: coverage
       - codecov/upload:
           file: coverage/*.json
+          token: f30ffc45-5e21-43f0-9983-27b406b0cc3c
