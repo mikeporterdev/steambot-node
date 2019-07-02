@@ -1,0 +1,18 @@
+version: 2.1
+orbs:
+  codecov: codecov/codecov@1.0.2
+jobs:
+  build:
+    docker:
+      - image: circleci/node:10.0-browsers
+    steps:
+      - checkout
+      - run: npm install
+      - run:
+          name: "Run Jest and Collect Coverage Reports"
+          command: npm run test
+      - store_artifacts:
+          path: coverage
+      - codecov/upload:
+          file: coverage/*.json
+          token: f30ffc45-5e21-43f0-9983-27b406b0cc3c
