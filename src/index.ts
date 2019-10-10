@@ -29,6 +29,10 @@ client.on('message', (msg: Message) => {
   if (content.startsWith(command)) {
     let searchString = content.substring(command.length);
 
+    if (true) {
+      console.log('hi');
+    }
+
     bot.buildResponse(searchString).subscribe((res: RichEmbed | string) => msg.reply(res));
   } else if (content.startsWith('steambot help')) {
     msg.reply(
