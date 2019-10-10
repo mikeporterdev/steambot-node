@@ -27,7 +27,7 @@ client.on('message', (msg: Message) => {
   }
   const content = msg.content.trim();
   if (content.startsWith(command)) {
-    const searchString = content.substring(command.length);
+    let searchString = content.substring(command.length);
 
     bot.buildResponse(searchString).subscribe((res: RichEmbed | string) => msg.reply(res));
   } else if (content.startsWith('steambot help')) {
