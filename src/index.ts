@@ -29,6 +29,7 @@ client.on('message', (msg: Message) => {
   if (content.startsWith(command)) {
     let searchString = content.substring(command.length);
 
+    const a = 1;
     if (true) {
       console.log('hi');
     }
