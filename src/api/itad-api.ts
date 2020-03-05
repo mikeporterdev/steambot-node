@@ -15,6 +15,15 @@ export class ItadApi {
   public getPricingInfoForAppId(appId: number): Observable<Price[]> {
     return this.getPlain(appId).pipe(mergeMap(res => this.getPricingInfoForPlain(res)));
   }
+  public getPricingInfoForAppId2(appId: number): Observable<Price[]> {
+    return this.getPlain(appId).pipe(mergeMap(res => this.getPricingInfoForPlain(res)));
+  }
+  public getPricingInfoForAppId3(appId: number): Observable<Price[]> {
+    return this.getPlain(appId).pipe(mergeMap(res => this.getPricingInfoForPlain(res)));
+  }
+  public getPricingInfoForAppId4(appId: number): Observable<Price[]> {
+    return this.getPlain(appId).pipe(mergeMap(res => this.getPricingInfoForPlain(res)));
+  }
 
   private getPlain(appId: number): Observable<Plain> {
     const uri = `https://api.isthereanydeal.com/v02/game/plain/?key=${this.apiKey}&shop=steam&game_id=app%2F${appId}`;
